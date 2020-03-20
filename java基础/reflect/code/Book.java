@@ -58,4 +58,8 @@ public class Book {
 
         return string;
     }
+
+    static{
+        System.out.println("静态初始化");
+    }
 }

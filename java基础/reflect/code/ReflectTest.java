@@ -1,5 +1,4 @@
 
-package reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,9 +11,19 @@ import java.lang.reflect.Method;
 public class ReflectTest {
 
     public static void main(String[] args) {
-        reflectNewInstance();
+        try {
+            //初始化静态块
+            Class<?> class1 = Class.forName("Book");
+            //不会链接，初始化
+            //ClassLoader class2 = Book.class.getClassLoader();
+        } catch (Exception e) {
+            //TODO: handle exception
+            e.printStackTrace();
+        }
+       
+       /*  reflectNewInstance();
         reflectPrivateFiled();
-        reflectPrivateMethod();
+        reflectPrivateMethod(); */
     }
     /**
      * 反射

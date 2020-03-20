@@ -1,0 +1,3 @@
+
+fail-fast机制是集合世界中比较常见的错误检测机制，通常是出现在遍历集合元素中。  
+集合遍历时，多线程环境中，当前线程会维护一个计数比较器-expectedModCount，记录修改的次数。遍历前会把实时修改次数modCount赋值给expectedModCount，如果两个数据不相等则抛出异常。Java.util下的所有集合都是fail-fast,而concurrent包中的集合类都是fail-safe。

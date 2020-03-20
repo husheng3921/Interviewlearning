@@ -1,3 +1,7 @@
-javac xx.javac
+javac xx.java
 
-javap -v xx.class
+# 反汇编
+javap -c xx.class
+
+# 口语化
+javap -verbose xx.class
