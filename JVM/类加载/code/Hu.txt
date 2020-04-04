@@ -1,0 +1,26 @@
+Compiled from "Hu.java"
+public class Hu {
+  public Hu();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_3
+       1: istore_1
+       2: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       5: iload_1
+       6: invokevirtual #3                  // Method java/io/PrintStream.println:(I)V
+       9: return
+
+  static {};
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #4                  // String Hello Husheng
+       5: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       8: bipush        123
+      10: putstatic     #6                  // Field value:I
+      13: return
+}
