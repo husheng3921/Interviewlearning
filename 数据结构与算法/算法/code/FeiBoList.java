@@ -1,5 +1,5 @@
 
-package algorithm;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +13,9 @@ public class FeiBoList {
         System.out.println(solve1(4));
         System.out.println(solve2(4));
         System.out.println(solve3(4));
+        System.out.println(fib1(5));
+        System.out.println(fib2(5));
+        System.out.println(fib3(5));
     }
 
     /**
@@ -65,5 +68,37 @@ public class FeiBoList {
             f2 = sum;
         }
         return sum;
+    }
+
+    /**
+     * 斐波拉契数列 1 1 2 3 5 8
+     * @param n
+     * @return
+     */
+    private static int fib1(int n){
+        if(n <= 2){
+            return 1;
+        }
+        return fib1(n-1)+fib1(n-2);
+    }
+
+    private static int fib2(int n){
+        int f1 =1, f2 =1;
+        // int t = 0;
+        for(int i = 3; i<=n;i++) {
+            f2 = f1 + f2;// t =新f2 = f1 + 旧f2
+            f1 = f2 - f1;// 新f1 = 旧f2=t-新f1
+        }
+        return f2;
+    }
+
+    private static int fib3(int n) {
+        int[] fib = new int[n+1];
+        fib[0] = 0;
+        fib[1] = fib[2] = 1;
+        for(int i = 3; i <=n;i++) {
+            fib[i] = fib[i-1] + fib[i-2];
+        }
+        return fib[n];
     }
 }
