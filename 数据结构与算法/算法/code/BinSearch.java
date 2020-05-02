@@ -1,5 +1,5 @@
 
-package algorithm;
+
 
 /**
  * BinSearch
@@ -8,7 +8,7 @@ package algorithm;
 public class BinSearch {
 
     public static void main(String[] args) {
-        int[] nums={1, 5, 6, 12, 30};
+        int[] nums={1, 5, 6,6, 12, 30};
         System.out.println(search1(nums, 6));
         System.out.println(search2(nums, 6));
         System.out.println(search1(nums, 7));

@@ -4,7 +4,7 @@ package algorithm;
 import java.lang.annotation.Retention;
 
 /**
- * LeetCode 191 32位无符号数字位颠倒
+ * LeetCode 190 32位无符号数字位颠倒
  * ReverseBits
  */
 public class ReverseBits {

@@ -22,6 +22,7 @@ AOP-Aspect Orient Programming，面向切面编程
 SpringAOP使用哪种实现方式具体逻辑在`org.springframework.aop.framework.DefaultAopProxyFactory`中实现。
 > 
 #### JDK代理
+[java jdk代理](https://blog.csdn.net/jiankunking/article/details/52143504)、[jdk代理](https://www.cnblogs.com/akaneblog/p/6720513.html)
 ```Java
 void proxyJDK(){
         //目标接口，被代理的

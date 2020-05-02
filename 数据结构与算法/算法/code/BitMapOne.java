@@ -21,7 +21,7 @@ public class BitMapOne {
     public BitMapOne (int length) {
         this.length = length;
         //bytes = new byte[length%8 == 0 ? length/8 : length/8 +1];
-        bytes = new byte[length&7 == 0 ? length>>3 : (length>>3 +1)]
+        bytes = new byte[length&7 == 0 ? length>>3 : (length>>3 +1)];
     }
 
     /**

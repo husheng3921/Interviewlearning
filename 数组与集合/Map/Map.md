@@ -92,7 +92,8 @@ JDK1.8
 
 * HashMap7死循环问题  
 [死循环](https://www.jianshu.com/p/1e9cf0ac07f4)
-[参考](https://blog.csdn.net/xuefeng0707/article/details/40797085)
+[参考](https://blog.csdn.net/xuefeng0707/article/details/40797085)  
+[HashMap不安全](https://mp.weixin.qq.com/s/AOzBTeVWs2a8dE9P36N7GA)
 
 * Map与Set使用时，注意自定义对象作为key时，重写hashCode和equals
   

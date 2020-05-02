@@ -1,5 +1,4 @@
 
-package algorithm;
 
 /**
  * CountBits
@@ -9,7 +8,10 @@ package algorithm;
 public class CountBits {
 
     public static void main(String[] args) {
-        
+        int[] res = solveTwo(5);
+        for(int item:res){
+            System.out.print(item+" ");
+        }
     }
     /**
      * X&(X-1)是将X的最低位1去掉，意思就是 x 的数与 X&(X-1)相差1 
@@ -19,7 +21,7 @@ public class CountBits {
     private static int[] counBits(int n) {
         
         int[] res = new int[n + 1];
-        for(int i = 0; i < n; i++){
+        for(int i = 1; i <=n; i++){
             res[i] = res[i &(i-1)] + 1;
         }
         return res;
@@ -33,7 +35,7 @@ public class CountBits {
      */
     private static int[] solveTwo(int n) {
         int[] res = new int[n + 1];
-        for(int i = 0; i <32; i++){
+        for(int i = 1; i <=n; i++){
             res[i] = res[i>>1] + (1 & i);
         }
         return res;
