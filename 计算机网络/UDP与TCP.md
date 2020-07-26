@@ -53,6 +53,7 @@ RTP为实时应用提供端到端的运输，但不提供任何服务质量的�
 |远程终端访问|Telnet|TCP|
 |web|HTTP|TCP|
 |文件传输|FTP|TCP|
+|离线邮件处理|POP3|TCP|
 |远程文件服务器|NFS|通常UDP|
 |流式多媒体|通常专用|UDP或TCP|
 |因特网电话|通常专用|UDP或TCP|
