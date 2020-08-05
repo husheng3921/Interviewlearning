@@ -39,7 +39,8 @@ Unix系统有5种IO模型：
 ![](img/IO6.png)
 调用blocking和non-blocking的区别：  
 调用blockingIO会一直block对应的进程直到操作完成，而non-blocking在kernel准备数据的情况下立刻返回。  
-前四种模型都是同步I/O模型，真正操作I/O操作recvfrom将阻塞进程。
+前四种模型都是同步I/O模型，真正操作I/O操作recvfrom将阻塞进程；同步、异步的说法是对于数据获取的过程而言的，前面几种最后获取数据的read操作调用，都是同步的，在read调用时，内核将数据从内核空间拷贝到应用程空间，这个过程是在read函数中同步进行的，如果内核实现的拷贝效率差，read调用就会在同步过程中消耗比较长的时间。  
+而异步操作发起read之后，内核自动将数据从内核空间拷贝到应用程序空间，拷贝是异步的，内核自动完成，
 
 ## I/O多路复用之select、poll、epoll详解
  本质上select、poll、epoll都是同步IO，他们都需要在读写事件就绪后自己负责进行读写，就是说这个读写过程是阻塞的。  
@@ -114,4 +115,20 @@ epoll优点：
 文件描述符(File descriptor)是一个用于表述指向文件的引用的抽象化概念。   
 文件描述符在形式上是一个非负整数。实际上，它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。当程序打开一个现有文件或者创建一个新文件时，内核向进程返回一个文件描述符；文件描述符一概念往往适用于UNIx、Linux这样的操作系统。 
 
-### 
+### Windows下的IOCP和Proactor模式
+
+和Linux不同，Windows下实现了一套完整的支持套接字的异步编程接口，这套接口一般被叫做IOCompletetionPort(IOCP).  
+和reactor模式一样，Proactor模式也存在一个无限循环运行的eventloop线程，但是不同与Reactor模式，<strong>这个线程并不负责处理I/O调用，它只负责对应的read、write操作完成的情况下，分发完成事件到不同的处理函数</strong>。  
+这里HTTP举例：  
+* 客户端发起一个GET请求
+* 这个GET请求对应的字节流被内核读取完成，内核将这个完成事件放置到一个队列中
+* event loop线程，也就是proactor这个队列获取事件，根据事件类型，分发到不同的处理函数上，比如一个http handle的onMessage解析函数；
+* Http request 解析函数完成报文解析
+* 业务逻辑处理，比如读取数据库的记录
+* 业务逻辑处理完成，开始encode，完成之后，发起一个异步写操作
+* 这个异步写操作被内核执行，完成之后这个异步操作被放置到内核的队列中
+* Proactor线程获取这个完成事件，分发到Http Handler 的onWriteCompled方法执行。  
+
+
+Proactor不会再像reactor一样，每次感知事件后再调用read、write方法完成数据的读写，只负责感知事件完成，并有对应的Handler发起异步读写请求，I/O操作本身是由系统内核完成的。需要传入数据缓冲区的地址信息，系统内核才可以自动帮我们把数据的读写工程做完成。  
+无论是reactor还是Proactor模式，<font color="red">都是一种基于事件分发的网络编程模式</font>；Reactor是基于待完成的I/O事件，而Proactor模式则是基于已完成的I/O事件。
