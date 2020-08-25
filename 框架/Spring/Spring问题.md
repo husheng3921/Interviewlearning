@@ -5,7 +5,7 @@
 Spring采用“三级缓存”来解决循环依赖的问题，在Spring中定义了三个Map，来作为缓存：
 * 一级缓存，singletonObjects,存放的已经实例化好的单例对象,用于保存beanName和创建bean实例之间的关系，beanname-->bean instance
 * 二级缓存，earlySingletonObjects,存放的是还没组装好完毕提前曝光的对象
-* 三级缓存，singleFactories,存放的是即将要被实例化的对象的对象工厂。用于保存BeanName与创建的bean工厂之间的关系，beanname-->ObjectFactory
+* 三级缓存，singletonFactories,存放的是即将要被实例化的对象的对象工厂。用于保存BeanName与创建的bean工厂之间的关系，beanname-->ObjectFactory
 
 当我们需要创建一个bean时，首先会从一级缓存singletonObjects中去尝试获取这个bean；如果没有，则会尝试去二级earlySingleObjects获取；如果也没有，则会从三级缓存中获取，找到对应的工厂，获取未完全填充的bean，然后删除三级缓存，并将这个bean填充到二级缓存。
 
@@ -47,3 +47,4 @@ T getObject()：返回由FactoryBean创建的bean的实例，
 ```
 `getBean("car")`，通过反射机制发现FactoryBean实现了FactoryBean的接口，容器就调用接口方法CarFactoryBean#getObject()方法返回。
 如果希望获取CarFactoryBean的实例，通过`getBean("&car")`;
+
