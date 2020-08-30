@@ -73,7 +73,7 @@ Netty层通过编码实现心跳机制，核心类是IdleStateHandler,
 ## Netty中有哪些重要组件
 * Channel：Netty网络操作抽象类，它出了包括基本的I/O操作，如bind、connect、read、write等
   > Channle接口实现类：NIOServerSocketChannel(服务端)和NIOSocketChannel客户端，对应BIO编程模型中的ServerSocket以及Socket两个概念。
-* EventLoop：主要是配合Channel处理I/O操作，用来处理生命周期中所发生的的事情，<strong>主要实际作用就是负责监听网络实践并调用事件处理器进行相关I/O操作的处理。
+* EventLoop：主要是配合Channel处理I/O操作，用来处理生命周期中所发生的的事情，<strong>主要实际作用就是负责监听网络实践并调用事件处理器进行相关I/O操作的处理。</strong>
 * ChannelFuture：Netty框架中所有的I/O操作都为异步的，因为我们需要ChannelFuture的addListener()注册一个ChannelFutrueListener监听事件，当操作执行成功或失败时，监听就会自动触发返回结果。
 * ChannelHandler：充当所有处理入站和出站的逻辑容器。ChannelHandler主要用来处理各种事件，这里事件包括：连接、数据接收、异常、数据转换等
 * ChannelPipline：为channelHandler链提供了容器，当Channel创建时，就会被自动分配到它专属的ChannelPipeline，这个是永久关联的，ChannelPipeline上通过AddLast()方法添加一个或多个ChannelHandler，因为一个数据或事件被多个Handler处理，当一个ChannelHandler处理完之后将数据交给下一个ChannelHandler。
