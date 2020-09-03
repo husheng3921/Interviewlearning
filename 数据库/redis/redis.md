@@ -28,6 +28,12 @@ redis采用的I/O多路复用函数：epoll/kqueue/evport/select?
 * 整数集合
 * 压缩列表
 * 对象
+#### 链表
+* 双端：链表节点带有prev和next指针，
+* 无环：表头节点和表尾节点都指向NULL
+* 带链表长度计数器：程序使用list结构的len属性对list持有的链表节点进行计数
+* 多态：链表节点使用void * 指针来保存节点值。
+
 
 #### 字典
 ![](../img/redis-2.png)
@@ -40,6 +46,12 @@ redis采用的I/O多路复用函数：epoll/kqueue/evport/select?
 * 渐进式rehash：
   * 扩容需要重新申请新的数组，将旧数组的键值对分多次、渐进式慢慢的rehash到新数组。
   * rehash操作时分摊到对字典的每个添加、删除、操作、查找和更新操作上。rehash完成时，rehashidx+1,完成时为-1；
+
+#### 整数集合
+当一个集合只包含整数值元素，并且元素数量不多是，redis就会使用整数集合作为集合键的底层实现。
+* 当向一个底层为int16_t数组集合中添加一个int64_t类型的整数数值是，整数集合已有的所有元素都会被转换成int64_t类型。
+* 只升级不降级。
+
 #### 跳跃表
 
 ![](./../img/redis-1.png)
@@ -53,6 +65,33 @@ redis采用的I/O多路复用函数：epoll/kqueue/evport/select?
   * 支持平均O(logN)、最坏O(N)
 
 #### 压缩列表
+## 过期策略
+* 过期的key集合
+redis将每个设置了过期时间的key放入到一个独立的字典中，以后定期遍历这个字典来删除到期的key。同时还会使用惰性策略来删除过期的key,惰性策略就是在客户端访问这个key会检查key的过期时间，过期则立即删除。定时删除时集中处理，惰性删除时零散处理。
+  * 惰性策略实现：由db.c/expireIfNeeded函数实现，所有读写数据库的Redis命令在执行之前都会调用expireIfNeed函数对输入键进行检查
+  * 定期删除策略：redis.c/activeExpireCycle函数实现，每当redis的服务器周期性操作redis.c/serverCron函数执行时，activeExpireCycle函数就会被调用。
+
+
+
+* 定时扫描策略
+redis默认会每秒进行十次过期扫描，过期扫描不会遍历过期字典中所有的key，采用一种贪心策略，
+1、过期字典中随机选20个key,
+2、删除这个20key中已过期的key
+3、如果过期的key比率超过1/4,那就重复步骤1；
+
+* 从库过期的策略
+从库不会过期扫描，从库对过期的key是被动的，主库在key到期时，会在AOF中增加一条del指令。同步到从库后，通过执行这条del指令来删除过期的key。
+
+## 淘汰策略
+* noeviction不会继续服务写请求，读请求可以继续进行，可以保证不会丢失数据，但是会让线上的业务不能持续进行。默认淘汰策略
+* volatile-lru:尝试淘汰设置了过期时间的key,最少使用的key优先被淘汰。没有设置过期时间的key不会被淘汰，这样可以保证需要持久化的数据不会突然被丢失。
+* volatile-ttl:淘汰key的剩余时间ttl的值，ttl越小越优先被淘汰
+* volatile-random：跟上面一样，不过淘汰的key是过期key集合中随机的key
+* allkeys-lru：淘汰的key对象是全体的key集合，而不只是过期的key集合。这意味着没有设置过期时间的key也会被淘汰。
+* allkeys-random:淘汰随机的key
+* volatile-lfu：带过期时间的key进行最近使用少的进行淘汰（redis4.0)
+* allkeys-lfu:对所有key执行lfu淘汰算法。
+
 
 ## Redis持久化
 ### RDB和AOF的优缺点
@@ -61,6 +100,48 @@ redis采用的I/O多路复用函数：epoll/kqueue/evport/select?
 |--|--|--|
 |RDB|全量数据快照，文件小、恢复快|无法保存最近一次快照之后的数据|
 |AOF|可读性高，适合保存增量数据，数据不易丢失|文件体积较大，恢复时间较长|
+### RDB
+<strong>RDB持久化通过保存数据库中的键值对来记录数据库的状态。</strong>
+* RDB文件的创建
+  * 生成RDB文件两个命令： SAVE，BGSAVE
+  * SAVE命令会阻塞Redis服务进程，直到RDB文件创建完毕为止，客户端所有命令请求都会被阻塞。
+  * BGSAVE：会派生出一个子进程，然后由子进程的方式调用这个函数。会拒绝SAVE，BGSAVE，BGREWRITEAOF命令。
+* RDB文件载入
+  * 如果服务器开启了AOF持久化功能，优先使用AOF来还原数据库状态
+  * 只有在AOF持久化功能关闭时，才会使用RDB文件来还原
+  * RDB载入文件时，会一直处于阻塞状态。
+
+* RDB文件结构
+
+|REDIS|db_version|database|EOF|check_sum|
+
+```shell
+od -c dump.rdb
+```
+> RDB会以快照“RDB”的形式将数据持久化到磁盘的一个二进制文件dump.rdb,
+> 工作原理：当redis需要做持久化时，redis会fork一个子进程，子进程将数据写到磁盘上一个临时RDB文件中，当子进程写完临时文件后，将原来RDB替换掉，这样的好处是可以copy-on-write.
+> RDB 非常适合备份；缺点是：尽量避免在服务器故障时丢失数据，RDB不适合。
+
+
+
+### AOF持久化
+<strong>AOF持久化是通过保存Redis服务器所执行的写命令来记录数据库状态的。</strong>
+
+* AOF持久化实现
+  * 会以协议格式将被执行的命令追加到服务器状态的aof_buf缓冲区末尾。
+
+* AOF载入与数据还原
+* AOF重写：为了解决AOF持久化文件体积膨胀，重写AOF文件，创建新的AOF文件代替现有的AOF文件，新旧AOF文件保存相同的数据库状态，但是不会包含任何浪费空间的冗余命令。
+  * AOF重写实现： 首先从数据库中读取键现在的值，然后用一条命令去记录键值对，代替之前记录这个键值对的多条命令。
+  * AOF后台重写：AOF重写aof_rewrite函数，
+
+> 使用AOF做持久化，每一个写命令都通过write函数追加到appendonly.aof中，配置如下：
+```
+appendfsync yes
+appendfsync always     #每次有数据修改发生时都会写入AOF文件。
+appendfsync everysec   #每秒钟同步一次，该策略为AOF的缺省策略。
+```
+>AOF 将 Redis 执行的每一条命令追加到磁盘中，处理巨大的写入会降低 Redis 的性能，不知道你是否可以接受。数据库备份和灾难恢复：定时生成 RDB 快照非常便于进行数据库备份，并且 RDB 恢复数据集的速度也要比 AOF 恢复的速度快。当然了，redis 支持同时开启 RDB 和 AOF，系统重启后，redis 会优先使用 AOF 来恢复数据，这样丢失的数据会最少。
 
 ## RDB-AOF混合持久方式 4.0后
 
@@ -111,7 +192,7 @@ redis-cluster采用去中心化思想，没有中心节点的说法，客户端�
 ## Redis使用
 linux下启动客户端:
 ```shell
-./redis-cli # 启动客户端
+./redis-cli -p port # 启动客户端
 auth 密码 #密码登录
 ```
 ## 参考阅读
