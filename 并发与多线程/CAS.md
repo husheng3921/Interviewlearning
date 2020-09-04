@@ -137,7 +137,7 @@ Unsafe的getAndAddInt方法时通过<strong>循环+CAS</strong>方法来实现�
 ### ABA问题
 * CAS swap的标准是：当前的值和预期的值是否一致，如果一致，就认为在此期间这个数值没有发生变动，  
 然而有些场景下，这个值从A变成了B，再由B变成A，它变化了两次，而CAS认为没有发生变成，检测不出此值是否被修改过。  
-* 加一个版本号来解决ABA问题；atomic包中提供了AtomicStampedReference这个类专门用来解决ABA问题。解决就是利用版本号，会维护一种类似<Object, int>的数据结构，int用来计数，就是版本号
+* 加一个版本号来解决ABA问题；atomic包中提供了<strong>AtomicStampedReference</strong>这个类专门用来解决ABA问题。解决就是利用版本号，会维护一种类似<Object, int>的数据结构，int用来计数，就是版本号
 
 ### 自旋时间过长
 单词CAS不一定执行成功，CAS往往配合循环实现，有时候死循环不断重试，  

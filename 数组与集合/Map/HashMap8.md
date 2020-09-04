@@ -196,7 +196,7 @@ HashMap底层的数据结构主要是：数组+链表+红黑树。其链表长�
                    boolean evict) {
         //n表示数组的长度，i为数组索引下标，p为i下标位置的Node值
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-        //如果数组为空，使用resize方法初始化
+        //如果数组为空，使用resize方法初始化，此时默认大小为16
         if ((tab = table) == null || (n = tab.length) == 0)
             n = (tab = resize()).length;
         //如果当前索引位置是空的，直接生成新的结点在当前索引位置上
