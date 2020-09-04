@@ -1,5 +1,12 @@
 # Linux命令
+## 查看CPU信息
+ * `cat /proc/cpuinfo | grep name| cut -f2 -d:|uniq -c`
+ * `cat /proc/cpuinfo | grep "physical id" | sort | uniq| wc -l`
+## 查看内存信息
+`cat /proc/meminfo/`
 
+## 查看磁盘信息
+`iostat -x 10`
 ## Linux之grep "XXX" * | wc -l 命令
 
 * 查看某文件下所有文件中的某个字符的个数
