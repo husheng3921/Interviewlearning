@@ -1,4 +1,56 @@
 # Linux命令
+## 查看文件内容
+```shell
+cat -n access.log #显示行号，带上参数-n
+more access.log #分页显示，enter翻页
+
+less access.log # 除了翻页，输入/Get,搜索get
+
+tail -n 2 access.log #显示文件末尾倒数几行
+head -n 2 access.log #显示文件开头几行
+
+sort -k 2 -t '  ' -n access.log #sort的-k参数来指定排序的列。此处传的是2，表示第二列；-t参数指定列分隔符，这里列分隔符时空格；-n指定按照数字来进行排序，
+[root@izwz9853xzzbsd0y95igboz ~]# sort -k 1 sort.txt 
+0 b
+1 a 
+2 c
+3 b
+4 d
+5 a
+
+[root@izwz9853xzzbsd0y95igboz ~]# sort -k 2 sort.txt 
+5 a
+1 a 
+0 b
+3 b
+2 c
+4 d
+# -k第二列排序，uniq -c去重显示次数
+[root@izwz9853xzzbsd0y95igboz ~]# sort -k 2 sort.txt | uniq -c
+      1 
+      1 1 a
+      1 5 a
+      1 1 a 
+      1 0 b
+      3 3 b
+      2 2 c
+      1 4 d
+# cut -f指定显示哪个区域，-d自定义分隔符，默认制表符
+[root@izwz9853xzzbsd0y95igboz logs]# cat access.log | cut -f1 -d " " | sort | uniq -c | sort -k 1 -n -r | head -10
+   5821 202.114.121.200
+   4377 196.207.85.20
+   3689 202.114.121.197
+   2710 202.114.121.192
+   1779 221.13.12.222
+   1499 163.177.13.2
+   1400 202.114.121.194
+   1363 202.114.121.195
+   1316 80.82.70.187
+   1225 202.114.121.193
+
+```
+
+
 ## 查看CPU信息
  * `cat /proc/cpuinfo | grep name| cut -f2 -d:|uniq -c`
  * `cat /proc/cpuinfo | grep "physical id" | sort | uniq| wc -l`
@@ -32,6 +84,9 @@ ls -l |grep "^-"|wc -l"
     * 
 ```
 wc -l
+[root@izwz9853xzzbsd0y95igboz logs]# wc -l access.log 
+491080 access.log
+
 ```
 统计输出的信息的行数
 
@@ -39,7 +94,9 @@ wc -l
 
 ```shell
 awk [选项参数] 'script' var= value file(s)
-
+awk [option] 'pattern {action}' file
+# option为命令选项，pattern行为匹配规则，
+# action为执行的具体操作，如果没有pattern，则对所有行执行action
 awk [选项参数] -f scriptfile var=value file(s)
 ```
 
@@ -172,3 +229,5 @@ lsof -p 7389
 df -hl # 查看磁盘剩余空间
 df -h # 查看每个根路径的区分大小
 du -sh[目录名] #返回该目录的大小
+du -hl #查看具体目录
+```

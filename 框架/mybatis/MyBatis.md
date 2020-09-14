@@ -130,3 +130,10 @@ MyBatis提供了查询缓存来缓存数据，从而达到提高查询性能的�
 ```xml
 <cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
 ```
+
+## 面试题
+* MyBatis怎么防止SQL注入
+  * `#`传入的数据会当成一个字符串，会对自动传入的数据加一个双引号。
+  * `$`将传入的数据直接显示生成在SQL中
+  * 预编译，底层用的JDBC中的PreparedStatement类在起作用，对象包含了编译好的SQL语句，执行时，`#{}`替换占位符就阔以了。
+  * `${}`输出变量的值，

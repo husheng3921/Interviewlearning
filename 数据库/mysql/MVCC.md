@@ -122,7 +122,7 @@ commit;
 * 综上，MVCC主要作用于事务性的，有行锁控制的数据库模型。
 
 * 多版本并发控制在使用`READ COOMMITED`和`REPEATABLE READ`这两种隔离级别中的事务执行普通的select操作访问记录的版本链过程中，这样子可以使不同事务的读写、写读操作并发执行，从而提升性能
-* READ COMMITED、 REPEATABLE READ两个隔离级别，生成Readview时机不同，RC每次select 都会生成一个ReadView ,而RR只在第一次select 操作前生成一个ReadView，之后查询操作重复这个Readview。
+* READ COMMITED、 REPEATABLE READ两个隔离级别，<strong>生成Readview时机不同，RC每次select 都会生成一个ReadView ,而RR只在第一次select 操作前生成一个ReadView，之后查询操作重复这个Readview</strong>。
 * RC级别下，每次执行select就会生成一个ReadView本身就保证了事务的不可以读取到未提交的事务，避免了脏读情况；RR级别下，一个事务只在第一次执行select生成ReadView，之后都复用这个ReadView，避免了不可重复读和幻读的问题。
 
 
