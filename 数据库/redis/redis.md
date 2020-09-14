@@ -14,6 +14,11 @@ redis采用的I/O多路复用函数：epoll/kqueue/evport/select?
 
 ## redis的数据类型
 ### 用户使用的数据类型
+* String:最基本的数据类型，二进制安全(SDS简单动态字符串)
+* Hash:String元素组成的字典，适合用于存储对象(ziplist和hashtable)
+* List:列表,按照String元素插入顺序排序(ziplist和linkedlist)
+* Set:String元素组成的无序集合，通过hash表实现，不允许重复(intset整数集合，hashtable哈希表)
+* Sorted Set:通过分数来为集合中的成员进行从小到大的排序(skiplist跳跃表和ziplist压缩列表)
 * String:最基本的数据类型，二进制安全
 * Hash:String元素组成的字典，适合用于存储对象
 * List:列表,按照String元素插入顺序排序
