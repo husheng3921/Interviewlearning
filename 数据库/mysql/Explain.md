@@ -100,6 +100,13 @@ mysql使用临时表来完成UNION查询的去重工作，针对该临时表的�
 
 ## type
 type列表示这个访问方法是啥，
+常用的类型有<strong>ALL,index,range,ref,eq_ref,const,system,性能依次从差到好</strong>
+* ALL：Full Table Scan，遍历全表以找到匹配行
+* index： Full index Scan，index与ALL区别为index只遍历索引树
+* range: 只检索给定范围的行，使用一个索引来选择行
+* ref：表示上述表的连接匹配条件，即哪些列或常量被查找索引列上的值
+* eq_ref:区别就是使用的索引是唯一索引，对于每个索引键值，表中只有一条记录匹配，简单来说，多表连接中使用primary key或者unique key作为关联条件。
+* const 、system:当mysql对查询部分进行优化，并转换为一个常量时，使用这些类型访问。如将主键置于where列表中，mysql就能将该查询转换成一个常量，system是const类型的特例，查询表只有一行的情况下，使用system。
 ```sql
 mysql> EXPLAIN SELECT * FROM s1 WHERE key1 = 'a';
 +----+-------------+-------+------------+------+---------------+----------+---------+-------+------+----------+-------+

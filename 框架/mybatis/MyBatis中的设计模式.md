@@ -1,0 +1,5 @@
+# MyBatis使用了哪些设计模式
+
+## 1、工厂模式
+典型代表就是SqlSessionFactory;
+SqlSession是MyBatis中的重要Java接口，通过该接口来执行SQL命令、获取映射器实例和管理实务，而SqlSessionFactory正是用来产生SqlSession对象的，

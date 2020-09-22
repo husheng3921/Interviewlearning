@@ -58,3 +58,18 @@ Setter方法注入目前是Spring主流的注入方式，它可以利用Java Bea
 
 #### 循环依赖注入问题
 <strong>什么是循环依赖</strong>
+
+## Bean生命周期
+
+![](./img/sprinbean-1.jpg)
+
+* 1.Spring启动后，查找并加装需要被Spring管理的bean，进行bean的实例化
+* 2.Bean实例化后将对Bean的引入和值注入到Bean属性中
+* 3.如果Bean实现了BeanNameAware接口的话，spring将Bean的ID传递给setBeanName方法
+* 4.如果Bean实现BeanFactoryAware接口的话，Spring将setBeanFactory()方法，将BeanFactory容器实例传入
+* 5.如果Bean实现了ApplicationContextAware接口的话，Spring将调用setApplicationContext()方法将bean所在应用上下文引用传入进来。
+* 6.如果bean实现了BeanPostProcessor接口，spring 将调用他们的postProcessorBeforeInitialization()方法
+* 7.如果bean实现了InitializingBean接口，Spring将调用他们的afterPropertiesSet()方法，调用自定义初始化方法
+* 如果bean实现了BeanPostProcessor接口，Spring将调用postProcesssAfterInitialization()方法。
+* 9.此时bean已经准备就绪，可以被正常使用
+* 10.bean实现了DisposableBean接口，调用它的destroy()方法，同样调用自定义销毁方法。
