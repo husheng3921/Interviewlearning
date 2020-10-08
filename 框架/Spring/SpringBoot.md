@@ -58,6 +58,9 @@ public @interface SpringBootApplication {
 * @EnableAutoConfiguration注解，打开自动配置功能。如果我们要关闭某个自动配置，可以设置注解的exclude或excludeName属性。来自springboot新特性
 
 ## SpringBoot自动装配原理
+
+[自动装配](https://juejin.im/post/6844904137746808839#heading-4)
+[自动装配原理](https://juejin.im/post/6844903840307740686)
 * 使用@EnableAutoConfiguration注解，打开spring boot自动配置的功能
 ```java
 @Target({ElementType.TYPE})
