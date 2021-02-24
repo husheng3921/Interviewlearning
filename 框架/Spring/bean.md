@@ -234,6 +234,43 @@ protected Object doCreateBean(final String beanName, final RootBeanDefinit
 * 当Spring完成Bean对象的实例化并且设置完成相关属性和依赖后，则会调用Bean的初始化方法initializeBean()方法，
   * 初始化第一阶段：检查当前Bean对象是否实现了BeanNameAware、BeanCLassLoaderAware、BeanFactoryAware等接口
 ```java
+/*
+* BeanPostProcessorBeforeInitialization
+* invokeInitMethods(beanName, wrappedBean, mbd)
+* BeanPostProcessorAfterInitialization
+*
+*/
+protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
+		if (System.getSecurityManager() != null) {
+			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+				invokeAwareMethods(beanName, bean);
+				return null;
+			}, getAccessControlContext());
+		}
+		else {
+			invokeAwareMethods(beanName, bean);
+		}
+
+		Object wrappedBean = bean;
+		if (mbd == null || !mbd.isSynthetic()) {
+			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+		}
+
+		try {
+			invokeInitMethods(beanName, wrappedBean, mbd);
+		}
+		catch (Throwable ex) {
+			throw new BeanCreationException(
+					(mbd != null ? mbd.getResourceDescription() : null),
+					beanName, "Invocation of init method failed", ex);
+		}
+		if (mbd == null || !mbd.isSynthetic()) {
+			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+		}
+
+		return wrappedBean;
+	}
+
   private void invokeAwareMethods(final String beanName, final Object bean) {
     if (bean instanceof Aware) {
         if (bean instanceof BeanNameAware) {
@@ -252,8 +289,8 @@ protected Object doCreateBean(final String beanName, final RootBeanDefinit
 }
 ```
   * 初始化第二阶段，BeanPostProcessor增强器，主要是对Spring容器提供的Bean实例对象进行有效扩展，允许Spring在初始化Bean阶段对其进行定制化修改，比如处理标记接口或者为其提供代理实现。
-  * 在初始化处理完成之后就会检查和执行initializingBean和init-method方法
-  * initializingBean是一个接口，它有一个afterPropertiesSet()方法，在Bean初始化会判断当前Bean是否实现了initializingBean，实现了则调用afterPropertiesSet方法，进行初始化工作，再检查是否制定了init-method,如果指定了则通过反射机制来调用指定的init-method方法
+  * 在初始化处理完成之后就会检查和执行InitializingBean和init-method方法
+  * InitializingBean是一个接口，它有一个afterPropertiesSet()方法，在Bean初始化会判断当前Bean是否实现了InitializingBean，实现了则调用afterPropertiesSet方法，进行初始化工作，再检查是否指定了init-method,如果指定了则通过反射机制来调用指定的init-method方法
 ```java
 protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
         throws Throwable {
