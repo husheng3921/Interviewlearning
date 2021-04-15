@@ -8,6 +8,10 @@
 
 ![](https://raw.githubusercontent.com/husheng3921/Figurebed/main/img/20210205185328.png)
 
+## 使用Gitee创建图床
+
+https://blog.csdn.net/weixin_39963192/article/details/114931911
+
 ## 创建GitHub图床，注册自己的GitHub账号
 
 1. 创建GitHub账号，登录
@@ -77,6 +81,8 @@
 
       https://juejin.cn/post/6844903768782290957
 
-      
+      https://blog.csdn.net/weixin_39963192/article/details/114931911 (Gitee创建图床)
 
+      
+      
       
